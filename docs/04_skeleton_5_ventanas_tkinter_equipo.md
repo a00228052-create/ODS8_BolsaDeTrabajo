@@ -1,6 +1,6 @@
-# Sesión 3 — Esqueleto de CERTEO con cinco ventanas tkinter
+# Sesión 3 — Esqueleto de Ofivanta con cinco ventanas tkinter
 
-**Proyecto:** CERTEO — Servicios con confianza.  
+**Proyecto:** Ofivanta — Servicios con confianza.  
 **ODS:** 8, Trabajo Decente y Crecimiento Económico.  
 **Fecha:** 10 de noviembre de 2026.
 
@@ -63,7 +63,7 @@ README.md
 
 4. Instalar en VS Code las extensiones Python, Pylance y Python Debugger de Microsoft.
 5. Usar **Python: Select Interpreter** y seleccionar `.venv\Scripts\python.exe`.
-6. En **Run and Debug**, elegir **Ejecutar CERTEO (src.app.main)** y presionar F5.
+6. En **Run and Debug**, elegir **Ejecutar Ofivanta (src.app.main)** y presionar F5.
 
 También se puede ejecutar sin activar el entorno en PowerShell:
 
@@ -91,7 +91,7 @@ bucles principales.
 ### `src/app/win_home.py`: bienvenida
 
 `open_win_home(parent)` construye un `Toplevel` con `Label` y `Button`.
-**Mostrar mensaje** abre un `messagebox.showinfo` con la propuesta de CERTEO
+**Mostrar mensaje** abre un `messagebox.showinfo` con la propuesta de Ofivanta
 y su relación con el ODS 8. **Cerrar** destruye únicamente la subventana.
 
 ### `src/app/win_form.py`: formulario
@@ -147,7 +147,7 @@ las pruebas y el archivo de prueba se guarda en una carpeta temporal.
 
 ## Primer Happy Path
 
-1. Iniciar CERTEO y ver los cinco accesos del menú.
+1. Iniciar Ofivanta y ver los cinco accesos del menú.
 2. Abrir Bienvenida, mostrar el mensaje y cerrar la subventana.
 3. Abrir Formulario, escribir un nombre y una edad numérica, pulsar Guardar,
    elegir un `.txt` y recibir la confirmación.
@@ -167,7 +167,7 @@ Capturas reales de la aplicación ejecutada en Windows:
 
 ### Ventana 1 — Bienvenida
 
-![Bienvenida de CERTEO](capturas/02_home.png)
+![Bienvenida de Ofivanta](capturas/02_home.png)
 
 ### Ventana 2 — Formulario
 
@@ -225,3 +225,4 @@ no constituye un registro de autoría individual ni de contribuciones histórica
 
 El equipo tiene seis integrantes; se conserva una persona por subventana y
 se asigna la integración y documentación al sexto integrante.
+
