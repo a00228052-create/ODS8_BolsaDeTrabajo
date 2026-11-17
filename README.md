@@ -1,4 +1,4 @@
-# CERTEO — Servicios con confianza
+# Ofivanta — Servicios con confianza
 
 Proyecto integrador ODS 8: Trabajo Decente y Crecimiento Económico.
 MVP educativo con una ventana principal y cinco subventanas tkinter.
@@ -14,7 +14,7 @@ python -m venv .venv
 
 No requiere paquetes externos. Python debe incluir tkinter.
 En VS Code instala Python, Pylance y Python Debugger de Microsoft, selecciona
-el intérprete `.venv` y presiona F5 con «Ejecutar CERTEO (src.app.main)».
+el intérprete `.venv` y presiona F5 con «Ejecutar Ofivanta (src.app.main)».
 Se usa `debugpy`, el tipo actual del depurador de Python.
 
 ## Documentación
@@ -22,3 +22,4 @@ Se usa `debugpy`, el tipo actual del depurador de Python.
 Consulta [la documentación y las evidencias](docs/04_skeleton_5_ventanas_tkinter_equipo.md).
 Los datos del CSV son ejemplos ficticios para demostrar la tabla.
 Este esqueleto no verifica identidades ni conecta usuarios reales.
+
