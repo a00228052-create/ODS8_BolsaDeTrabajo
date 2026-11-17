@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Ejecutar CERTEO (src.app.main)",
+      "name": "Ejecutar Ofivanta (src.app.main)",
       "type": "debugpy",
       "request": "launch",
       "module": "src.app.main",
