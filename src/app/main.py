@@ -8,13 +8,13 @@ from .win_canvas import open_win_canvas
 
 def main():
     root = tk.Tk()
-    root.title("CERTEO - Servicios con confianza")
+    root.title("Ofivanta - Servicios con confianza")
     root.geometry("480x380")
 
     frame = ttk.Frame(root, padding=16)
     frame.pack(fill="both", expand=True)
 
-    ttk.Label(frame, text="CERTEO · Servicios con confianza", font=("Segoe UI", 12, "bold")).pack(pady=(0, 12))
+    ttk.Label(frame, text="Ofivanta · Servicios con confianza", font=("Segoe UI", 12, "bold")).pack(pady=(0, 12))
     ttk.Button(frame, text="1) Home / Bienvenida", command=lambda: open_win_home(root)).pack(pady=4, fill="x")
     ttk.Button(frame, text="2) Formulario", command=lambda: open_win_form(root)).pack(pady=4, fill="x")
     ttk.Button(frame, text="3) Lista (CRUD básico)", command=lambda: open_win_list(root)).pack(pady=4, fill="x")
@@ -27,4 +27,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
