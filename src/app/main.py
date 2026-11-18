@@ -1,10 +1,24 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from .win_home import open_win_home
 from .win_form import open_win_form
 from .win_list import open_win_list
-from .win_table import open_win_table
 from .win_canvas import open_win_canvas
+
+
+def open_win_table(parent):
+    # La tabla se carga al abrirla para no bloquear las otras ventanas.
+    try:
+        from .win_table import open_win_table as abrir_tabla
+    except (ImportError, SyntaxError):
+        messagebox.showerror(
+            "Ventana pendiente",
+            "La ventana de solicitudes todavía no está lista. "
+            "Puedes seguir usando Buscar servicio.",
+            parent=parent,
+        )
+        return
+    return abrir_tabla(parent)
 
 def main():
     root = tk.Tk()
