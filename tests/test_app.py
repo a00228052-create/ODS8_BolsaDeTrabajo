@@ -59,19 +59,11 @@ class AppTests(unittest.TestCase):
                 button(win, 'Guardar').invoke()
             self.assertEqual(path.read_text(encoding='utf-8'), 'Nombre: Persona de prueba\nEdad: 25\n')
 
-    def test_list_add_delete_clear(self):
-        win = open_win_list(self.root)
-        entry = widgets(win, ttk.Entry)[0]
-        lb = widgets(win, tk.Listbox)[0]
-        for value in ['Plomería', 'Electricidad']:
-            entry.insert(0, value)
-            button(win, 'Agregar').invoke()
-        self.assertEqual(lb.get(0, 'end'), ('Plomería', 'Electricidad'))
-        lb.selection_set(0)
-        button(win, 'Eliminar seleccionado').invoke()
-        self.assertEqual(lb.get(0, 'end'), ('Electricidad',))
-        button(win, 'Limpiar').invoke()
-        self.assertEqual(lb.size(), 0)
+    def test_list_filter_services(self):
+        win = open_win_list(self.root, categoria='plomeria')
+        tree = widgets(win, ttk.Treeview)[0]
+        self.assertEqual(len(tree.get_children()), 2)
+        self.assertEqual(tree.item(tree.get_children()[0], 'values')[0], 'Ana López')
 
     def test_table_reads_csv(self):
         win = open_win_table(self.root)
@@ -100,3 +92,4 @@ class AppTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
+
