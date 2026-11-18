@@ -106,6 +106,25 @@ class BuscarServicioTests(unittest.TestCase):
         button(win, 'Cerrar').invoke()
         self.assertFalse(win.winfo_exists())
 
+    def test_abrir_desde_menu_principal(self):
+        from src.app.main import main
+        with patch('src.app.main.tk.Tk', return_value=self.root), patch.object(self.root, 'mainloop'):
+            main()
+        button(self.root, '3) Buscar servicio').invoke()
+        win = next(w for w in self.root.winfo_children() if isinstance(w, tk.Toplevel))
+        self.assertEqual(win.title(), 'Ofivanta - Buscar servicio')
+        self.assertEqual(len(widgets(win, ttk.Treeview)[0].get_children()), 10)
+        button(win, 'Cerrar').invoke()
+        self.assertTrue(self.root.winfo_exists())
+
+    def test_tabla_incompleta_no_bloquea_el_menu(self):
+        from src.app.main import open_win_table
+        with patch('src.app.main.messagebox.showerror') as error:
+            open_win_table(self.root)
+        error.assert_called_once()
+        win = open_win_list(self.root)
+        self.assertTrue(win.winfo_exists())
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
