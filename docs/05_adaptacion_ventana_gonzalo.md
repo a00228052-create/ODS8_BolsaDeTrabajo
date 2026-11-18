@@ -1,104 +1,48 @@
-# Sesión 5 — Mi ventana de Ofivanta
+Sesión 5. Adaptación de mi ventana
 
-Nombre: Gonzalo Martínez Zermeño.
+Gonzalo Martínez Zermeño
 
-Equipo y proyecto: Ofivanta.
+Equipo Ofivanta
 
-Ventana asignada: Ventana 3, `src/app/win_list.py`.
+Ventana 3: src/app/win_list.py
 
-Fecha: 17 de noviembre de 2026.
+17 de noviembre de 2026
 
-## Qué hace mi ventana
+Mi parte en Ofivanta es la ventana donde el cliente busca un oficio y elige a un trabajador. Por ejemplo, si tiene una fuga en su casa, puede buscar plomería y revisar quién ofrece ese servicio. Esto va con la idea del proyecto de ayudar a los trabajadores de oficios a encontrar clientes y se relaciona con el ODS 8.
 
-En Ofivanta queremos que una persona pueda buscar a alguien que le ayude con un trabajo en su casa, como reparar una fuga o revisar una instalación eléctrica. A mí me toca la pantalla donde se buscan los servicios y se elige al trabajador.
+La ventana original solo tenía una lista vacía y botones para agregar o borrar texto. Esta es una captura del código de la sesión 3, ejecutado otra vez para hacer la comparación:
 
-La idea se relaciona con el ODS 8 porque busca ayudar a los trabajadores de oficios a mostrar sus servicios y encontrar clientes. Por ahora usamos datos de ejemplo, así que los perfiles no son personas que se puedan contratar desde la aplicación.
+![Ventana original](capturas/05_gonzalo_lista_original.png)
 
-## Cómo estaba antes
+La idea para mi diseño fue poner el filtro de oficios arriba, los trabajadores en el centro y los botones abajo. Así se puede revisar la información antes de pasar al formulario. Este es el boceto:
 
-La ventana de la sesión 3 tenía una lista vacía y un espacio para escribir. Sus botones eran Agregar, Eliminar seleccionado, Limpiar y Cerrar. Servía para practicar con una lista, pero todavía no mostraba servicios ni trabajadores.
+![Diseño propuesto](capturas/05_gonzalo_diseno_propuesto.png)
 
-Para tener la comparación, se volvió a ejecutar la ventana original de la sesión 3 y se tomó esta captura. El código original corresponde al commit `f79d110b7edc19094ed1f66e40470b099741956e`.
+Los cambios al código base fueron:
 
-![Ventana original de la sesión 3](capturas/05_gonzalo_lista_original.png)
+1. Cambiar el nombre a Buscar servicio y hacer más grande la ventana.
+2. Cargar los oficios y trabajadores desde obtener_servicios() y obtener_trabajadores(), en los archivos compartidos de src/core.
+3. Cambiar la lista por una tabla que muestre nombre, oficio, zona y disponibilidad.
+4. Agregar un filtro por oficio y mostrar los datos del trabajador al seleccionar una fila.
+5. Quitar Agregar, Eliminar y Limpiar, porque el cliente no debe cambiar el catálogo.
+6. Poner Seleccionar trabajador y Solicitar servicio. Si no se elige a nadie o el trabajador no está disponible, aparece un aviso.
+7. Abrir el formulario de Irma con el servicio y el trabajador elegidos, incluyendo sus identificadores.
+8. Mantener Cerrar y conectar la ventana con el menú principal.
 
-## Cómo quiero que quede
+Así quedó la ventana. En el ejemplo se eligió Plomería y se seleccionó a Carlos Pérez. Debajo de la tabla aparecen sus datos. Todos los trabajadores son ficticios para poder probar la aplicación.
 
-La pantalla se llama Buscar servicio. Arriba lleva el filtro de oficios; en medio, la tabla de trabajadores; y abajo, los datos de la persona seleccionada y los botones para continuar.
+![Ventana adaptada](capturas/05_gonzalo_lista_adaptada.png)
 
-La tabla muestra nombre, oficio, zona y disponibilidad. El diseño es sencillo: fondo claro, letras oscuras y una fila resaltada para saber qué trabajador se eligió. La ventana se puede ampliar si hace falta espacio.
+La prueba se hizo desde el botón 3) Buscar servicio del menú principal. La aplicación se inicia desde la carpeta del proyecto con python -m src.app.main.
 
-Este es el boceto de la distribución, separado de las capturas de la aplicación funcionando:
+![Acceso desde el menú principal](capturas/05_gonzalo_menu_principal.png)
 
-![Diseño propuesto para Buscar servicio](capturas/05_gonzalo_diseno_propuesto.png)
+Después se eligió un oficio, se seleccionó un trabajador y se abrió el formulario. El oficio y el nombre llegaron correctamente:
 
-También se incluye el [boceto en SVG](capturas/05_gonzalo_diseno_propuesto.svg).
+![Selección recibida en el formulario](capturas/05_gonzalo_seleccion_formulario.png)
 
-## Cambios al código base
+También se revisaron los avisos al continuar sin selección, el bloqueo de trabajadores no disponibles y que cerrar la lista no cierre el menú. Las nueve pruebas de esta parte pasaron.
 
-1. Cambiar el nombre y ampliar la ventana para que los datos se vean completos.
-2. Cargar los oficios desde `obtener_servicios()` y los trabajadores desde `obtener_trabajadores()`.
-3. Cambiar la lista vacía por una tabla con nombre, oficio, zona y disponibilidad.
-4. Agregar un filtro para buscar por oficio o ver todas las opciones.
-5. Mostrar los datos del trabajador al seleccionar una fila y contar los resultados del filtro.
-6. Quitar Agregar, Eliminar seleccionado y Limpiar, porque el cliente no debe modificar a los trabajadores del catálogo.
-7. Agregar Seleccionar trabajador y Solicitar servicio. Si no hay una fila seleccionada, mostrar un aviso.
-8. No permitir continuar con un trabajador marcado como No disponible.
-9. Al pedir un servicio, abrir el formulario de Irma con el oficio y el trabajador elegidos, incluidos sus identificadores.
-10. Mantener el botón Cerrar y abrir mi ventana desde el menú principal.
+Para poder abrir el menú hubo que ajustar main.py, porque la ventana de la tabla tiene un error de indentación. Ahora esa ventana se carga al pulsar su botón y muestra un aviso si todavía falla. La tabla sigue pendiente del equipo. También falta conectar el guardado con Luis; en las pruebas se usó un guardado de ejemplo, no una contratación real.
 
-El código también permite recibir un oficio desde la pantalla de inicio. Por ejemplo, puede abrir directamente el catálogo de plomería.
-
-## Cómo quedó
-
-En esta captura se eligió Plomería. Aparecen dos trabajadores y está seleccionado Carlos Pérez. Sus datos se muestran debajo de la tabla.
-
-![Mi ventana adaptada con el filtro de plomería](capturas/05_gonzalo_lista_adaptada.png)
-
-Los datos están separados de la ventana para que después el equipo pueda cambiarlos sin rehacer toda la interfaz.
-
-| Archivo | Qué contiene |
-| --- | --- |
-| `src/app/win_list.py` | Mi ventana, el filtro y la selección del trabajador. |
-| `src/core/servicios.py` | Los ocho oficios de ejemplo. |
-| `src/core/trabajadores.py` | Los diez trabajadores ficticios. |
-| `src/app/main.py` | El menú desde donde se abre mi ventana. |
-| `tests/test_buscar_servicio.py` | Las pruebas de esta parte. |
-
-## Prueba desde el menú principal
-
-Se trabajó sobre una copia local del proyecto. Para iniciar la aplicación desde su carpeta principal se usa:
-
-```powershell
-python -m src.app.main
-```
-
-La ventana se probó activando el botón 3) Buscar servicio del menú principal.
-
-![Menú principal con el acceso a Buscar servicio](capturas/05_gonzalo_menu_principal.png)
-
-El recorrido de prueba fue elegir Plomería, seleccionar a Carlos Pérez y pulsar Solicitar servicio. El formulario recibió la selección correcta, como se ve aquí:
-
-![Servicio y trabajador recibidos en el formulario de Irma](capturas/05_gonzalo_seleccion_formulario.png)
-
-También se comprobó que aparezca un aviso al continuar sin elegir a nadie, que no se pueda solicitar a un trabajador no disponible y que cerrar la lista deje abierto el menú.
-
-Se aprobaron nueve pruebas automatizadas. Revisan los filtros, la selección, los avisos, los datos enviados al formulario y la apertura desde el menú. Se pueden repetir con:
-
-```powershell
-python -m unittest discover -s tests -p test_buscar_servicio.py -v
-```
-
-Para comprobar los datos que recibe el formulario se usó una función de guardado de prueba. Todavía no se guarda una contratación real.
-
-## Qué queda pendiente
-
-Al revisar el proyecto se encontró un error de indentación en `win_table.py` que impedía iniciar el menú. Se ajustó `main.py` para que esa ventana se cargue solo al abrirla. Si aún falla, aparece un aviso y se puede seguir usando la lista. La tabla sigue pendiente del equipo; esto no significa que las cinco ventanas ya estén terminadas.
-
-Mi parte entrega la selección al formulario actual de Irma. Falta conectar el guardado compartido con Luis y terminar la integración de las demás ventanas. Los perfiles siguen siendo ficticios, sin pagos, reseñas ni verificación de identidad.
-
-## Reflexión
-
-Estos cambios ayudan a que la ventana tenga sentido dentro de Ofivanta. Antes solo permitía escribir y borrar textos. Ahora permite buscar un oficio, comparar las opciones y elegir un trabajador antes de llenar la solicitud.
-
-Mostrar la zona y la disponibilidad ayuda a decidir, y pasar la selección al formulario evita tener que escribir otra vez los mismos datos. Todavía falta integrar otras partes, pero esta ventana ya representa el primer paso para pedir un servicio desde la aplicación.
+Con estos cambios la lista ya tiene una función dentro del proyecto. El cliente puede buscar lo que necesita y ver las opciones antes de pedir el servicio. Mostrar la zona y la disponibilidad ayuda a elegir, y enviar esos datos al formulario evita escribirlos otra vez. Todavía faltan partes de la aplicación, pero esta ventana ya permite empezar el recorrido para solicitar un trabajo en casa.
