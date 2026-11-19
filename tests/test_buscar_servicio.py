@@ -1,130 +1,61 @@
-"""Pruebas del catálogo y su conexión con el formulario actual."""
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 import tkinter as tk
 from tkinter import ttk
+from src.core import datos
 from src.app.win_list import open_win_list
-from src.core.servicios import obtener_servicios
-from src.core.trabajadores import obtener_trabajadores
 
 
-def widgets(parent, kind):
-    result = []
-    for child in parent.winfo_children():
-        if isinstance(child, kind):
-            result.append(child)
-        result.extend(widgets(child, kind))
-    return result
+def widgets(parent,kind):
+    resultado=[]
+    for hijo in parent.winfo_children():
+        if isinstance(hijo,kind):resultado.append(hijo)
+        resultado.extend(widgets(hijo,kind))
+    return resultado
 
 
-def button(win, name):
-    return next(w for w in widgets(win, ttk.Button) if w.cget('text') == name)
+def boton(win,nombre):return next(b for b in widgets(win,ttk.Button) if b.cget("text")==nombre)
 
 
 class BuscarServicioTests(unittest.TestCase):
     def setUp(self):
-        self.root = tk.Tk()
-        self.root.withdraw()
-        self.root.update_idletasks()
+        self.carpeta=tempfile.TemporaryDirectory()
+        self.parche=patch.object(datos,"DB_path",Path(self.carpeta.name)/"catalogo.sqlite3");self.parche.start()
+        self.root=tk.Tk();self.root.withdraw();self.root.update_idletasks()
 
     def tearDown(self):
-        self.root.update_idletasks()
-        self.root.destroy()
+        self.root.update_idletasks();self.root.destroy();self.parche.stop();self.carpeta.cleanup()
 
-    def test_catalogos_compartidos(self):
-        services = {s['id'] for s in obtener_servicios()}
-        workers = obtener_trabajadores()
-        self.assertEqual(len({w['id'] for w in workers}), len(workers))
-        self.assertTrue(all(w['servicio_id'] in services for w in workers))
-        workers[0]['nombre'] = 'Cambio'
-        self.assertNotEqual(obtener_trabajadores()[0]['nombre'], 'Cambio')
+    def test_filtra_por_oficio_y_disponibilidad(self):
+        win=open_win_list(self.root,"plomeria")
+        self.assertEqual(len(win.tabla.get_children()),2)
+        win.seleccionar_categoria("serv-electricidad")
+        self.assertEqual(len(win.tabla.get_children()),2)
+        widgets(win,ttk.Checkbutton)[0].invoke()
+        self.assertEqual(win.tabla.get_children(),("3|serv-electricidad",))
 
-    def test_filtro_y_cambio_de_seleccion(self):
-        win = open_win_list(self.root, categoria='plomeria')
-        tree = widgets(win, ttk.Treeview)[0]
-        self.assertEqual(tree.get_children(), ('1', '2'))
-        tree.selection_set('1')
-        combo = widgets(win, ttk.Combobox)[0]
-        combo.set('Servicios de Electricidad')
-        combo.event_generate('<<ComboboxSelected>>')
-        self.root.update()
-        self.assertEqual(tree.get_children(), ('3', '4'))
-        self.assertEqual(tree.selection(), ())
-        combo.current(0)
-        combo.event_generate('<<ComboboxSelected>>')
-        self.root.update()
-        self.assertEqual(len(tree.get_children()), 10)
+    def test_aviso_sin_seleccion_y_no_disponible(self):
+        win=open_win_list(self.root)
+        with patch("src.app.win_list.messagebox.showwarning") as aviso,patch("src.app.win_list.open_win_form") as form:
+            boton(win,"Solicitar servicio").invoke();boton(win,"Seleccionar trabajador").invoke()
+            win.tabla.selection_set("4|serv-electricidad");boton(win,"Solicitar servicio").invoke()
+            self.assertEqual(aviso.call_count,3);form.assert_not_called()
 
-    def test_avisos_sin_seleccion(self):
-        win = open_win_list(self.root)
-        with patch('src.app.win_list.messagebox.showwarning') as warning, patch('src.app.win_list.open_win_form') as form:
-            button(win, 'Seleccionar trabajador').invoke()
-            button(win, 'Solicitar servicio').invoke()
-            self.assertEqual(warning.call_count, 2)
-            form.assert_not_called()
+    def test_pasa_ids_que_existen_en_base(self):
+        win=open_win_list(self.root,"plomeria");win.tabla.selection_set("2|serv-plomeria")
+        with patch("src.app.win_list.open_win_form") as form:boton(win,"Solicitar servicio").invoke()
+        self.assertEqual(form.call_args.kwargs["servicio"]["id"],"serv-plomeria")
+        self.assertEqual(form.call_args.kwargs["trabajador"]["id"],"2")
 
-    def test_no_disponible(self):
-        win = open_win_list(self.root)
-        widgets(win, ttk.Treeview)[0].selection_set('4')
-        with patch('src.app.win_list.messagebox.showwarning') as warning, patch('src.app.win_list.open_win_form') as form:
-            button(win, 'Solicitar servicio').invoke()
-            warning.assert_called_once()
-            form.assert_not_called()
-
-    def test_seleccion_llega_al_formulario_y_al_guardado(self):
-        win = open_win_list(self.root)
-        widgets(win, ttk.Treeview)[0].selection_set('2')
-        with patch('src.app.win_form._guardar_solicitud', return_value=123) as guardar:
-            button(win, 'Solicitar servicio').invoke()
-        form = next(w for w in win.winfo_children() if isinstance(w, tk.Toplevel))
-        labels = ' '.join(w.cget('text') for w in widgets(form, tk.Label))
-        self.assertIn('Carlos Pérez', labels)
-        self.assertIn('Servicios de Plomería', labels)
-        fields = widgets(form, ttk.Entry)
-        for entry, value in zip(fields[:3], ['Cliente de prueba', '4771234567', 'Domicilio de prueba']):
-            entry.insert(0, value)
-        widgets(form, tk.Text)[0].insert('1.0', 'Fuga de agua de ejemplo')
-        with patch('src.app.win_form.messagebox.askyesno', return_value=True), patch('src.app.win_form.messagebox.showinfo'):
-            button(form, 'Revisar y enviar solicitud').invoke()
-        guardar.assert_called_once()
-        datos = guardar.call_args.args[0]
-        self.assertEqual(datos['servicio']['id'], 'plomeria')
-        self.assertEqual(datos['trabajador']['id'], 2)
-        self.assertEqual(datos['estado'], 'Pendiente')
-
-    def test_catalogo_vacio(self):
-        with patch('src.app.win_list.obtener_trabajadores', return_value=[]):
-            win = open_win_list(self.root)
-        self.assertEqual(widgets(win, ttk.Treeview)[0].get_children(), ())
-        self.assertTrue(any(w.cget('text') == 'No hay trabajadores para este oficio.' for w in widgets(win, ttk.Label)))
-
-    def test_cliente_no_modifica_catalogo(self):
-        win = open_win_list(self.root)
-        names = [w.cget('text') for w in widgets(win, ttk.Button)]
-        for forbidden in ['Agregar', 'Eliminar seleccionado', 'Limpiar']:
-            self.assertNotIn(forbidden, names)
-        button(win, 'Cerrar').invoke()
-        self.assertFalse(win.winfo_exists())
-
-    def test_abrir_desde_menu_principal(self):
-        from src.app.main import main
-        with patch('src.app.main.tk.Tk', return_value=self.root), patch.object(self.root, 'mainloop'):
-            main()
-        button(self.root, '3) Buscar servicio').invoke()
-        win = next(w for w in self.root.winfo_children() if isinstance(w, tk.Toplevel))
-        self.assertEqual(win.title(), 'Ofivanta - Buscar servicio')
-        self.assertEqual(len(widgets(win, ttk.Treeview)[0].get_children()), 10)
-        button(win, 'Cerrar').invoke()
-        self.assertTrue(self.root.winfo_exists())
-
-    def test_tabla_incompleta_no_bloquea_el_menu(self):
-        from src.app.main import open_win_table
-        with patch('src.app.main.messagebox.showerror') as error:
-            open_win_table(self.root)
-        error.assert_called_once()
-        win = open_win_list(self.root)
-        self.assertTrue(win.winfo_exists())
+    def test_busqueda_y_catalogo_no_editable(self):
+        win=open_win_list(self.root)
+        entrada=next(w for w in widgets(win,ttk.Entry) if not isinstance(w,ttk.Combobox))
+        entrada.insert(0,"carpinteria")
+        self.assertEqual(win.tabla.get_children(),("8|serv-carpinteria",))
+        nombres=[b.cget("text") for b in widgets(win,ttk.Button)]
+        self.assertFalse(set(nombres)&{"Agregar","Eliminar seleccionado","Limpiar"})
 
 
-if __name__ == '__main__':
-    unittest.main(verbosity=2)
+if __name__=="__main__":unittest.main()

@@ -1,0 +1,9 @@
+Logo de Ofivanta
+
+El diseño combina la letra O con una casa y una puerta para representar los servicios para el hogar.
+
+Archivo utilizado: ofivanta_logo_azul.png, en formato PNG con fondo transparente.
+
+Colores: azul principal #2563EB, azul oscuro #1E40AF y blanco #FFFFFF.
+
+La aplicación usa el mismo símbolo en el menú, el inicio y el icono de sus ventanas.
