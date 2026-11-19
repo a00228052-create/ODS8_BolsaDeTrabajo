@@ -130,7 +130,8 @@ class AppTests(unittest.TestCase):
         for texto in ["Buscar servicio","Mis solicitudes","Seguimiento"]:
             boton(self.root,texto).invoke();boton(self.root,texto).invoke()
         ventanas=[w for w in self.root.winfo_children() if isinstance(w,tk.Toplevel)]
-        self.assertEqual(len(ventanas),3)
+        self.assertEqual(len(ventanas),0)
+        self.assertEqual(set(self.root.navegador.paginas),{"Inicio","Buscar servicio","Mis solicitudes","Seguimiento"})
 
 
 if __name__=="__main__":unittest.main()

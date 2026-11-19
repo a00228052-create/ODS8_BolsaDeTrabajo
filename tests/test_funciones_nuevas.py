@@ -266,15 +266,16 @@ class VentanasNuevasTests(DatosDemoFixture):
         for indice in range(5):
             self.root.menu_ventanas.invoke(indice)
         ventanas=[w for w in self.root.winfo_children() if isinstance(w,tk.Toplevel)]
-        self.assertEqual(len(ventanas),5)
+        self.assertEqual(len(ventanas),0)
+        self.assertEqual(len(self.root.navegador.paginas),5)
 
     def test_enviar_desde_busqueda_abre_historial_con_seleccion(self):
         self.abrir_menu()
         boton(self.root,'Buscar servicio').invoke()
-        lista=next(w for w in self.root.winfo_children() if isinstance(w,tk.Toplevel))
+        lista=self.root.navegador.paginas['Buscar servicio']
         lista.tabla.selection_set('1|serv-plomeria')
         boton(lista,'Solicitar servicio').invoke()
-        form=next(w for w in lista.winfo_children() if isinstance(w,tk.Toplevel))
+        form=self.root.navegador.paginas['Solicitar servicio']
         entradas=[w for w in widgets(form,ttk.Entry) if not isinstance(w,ttk.Combobox)]
         for entrada,texto in zip(entradas[:3],['Cliente ejemplo','demo@example.test','Lugar ficticio']):
             entrada.insert(0,texto)
@@ -282,7 +283,7 @@ class VentanasNuevasTests(DatosDemoFixture):
         with patch('src.app.win_form.messagebox.askyesno',return_value=True),patch('src.app.win_form.messagebox.showinfo'):
             boton(form,'Revisar y enviar solicitud').invoke()
         self.root.update()
-        historial=next(w for w in self.root.winfo_children() if isinstance(w,tk.Toplevel) and 'Mis solicitudes' in w.title())
+        historial=self.root.navegador.paginas['Mis solicitudes']
         self.assertEqual(historial.tabla.selection(),(datos.obtener_solicitudes()[0]['id'],))
 
 
