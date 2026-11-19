@@ -1,8 +1,11 @@
 Sesión 5. Buscar servicio
 
 Gonzalo Martínez Zermeño
+
 Equipo Ofivanta
+
 Ventana asignada: src/app/win_list.py
+
 17 de noviembre de 2026
 
 Esta parte de Ofivanta sirve para buscar un oficio y elegir a un trabajador. Por ejemplo, si alguien tiene una fuga, puede buscar plomería y revisar quién ofrece ese servicio. La idea se relaciona con el ODS 8 porque busca dar más oportunidades de trabajo a las personas que ofrecen oficios.
