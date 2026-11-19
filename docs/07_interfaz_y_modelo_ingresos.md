@@ -36,4 +36,4 @@ Se comprobaron 45 pruebas de datos y ventanas. Se revisó el acceso a las cinco 
 
 Las capturas usan una base temporal con datos de ejemplo, separada de los datos de uso de la app. Esta versión sigue siendo un prototipo local. Para contratar y cobrar de verdad faltan cuentas, permisos, un servidor compartido y una integración de pagos.
 
-El logo se generó con la herramienta integrada de imágenes. El archivo utilizado está en assets/ofivanta_logo_azul.png; las instrucciones de creación y cambio de color están en assets/como_se_creo_el_logo.txt.
+El logo de la aplicación está en assets/ofivanta_logo_azul.png. Combina una casa con la letra O de Ofivanta y tiene fondo transparente para usarlo en el inicio y en el menú.
