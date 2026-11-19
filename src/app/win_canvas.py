@@ -2,12 +2,12 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from ..core import datos
-from .ui import crear_ventana, encabezado, tarjeta, etiqueta, aviso_error, notificar_cambio, fecha_legible, fecha_corta, dinero, FONDO, VERDE, GRIS, TEXTO, BORDE
+from .ui import cerrar_vista, crear_ventana, encabezado, tarjeta, etiqueta, aviso_error, notificar_cambio, fecha_legible, fecha_corta, dinero, FONDO, VERDE, GRIS, TEXTO, BORDE
 
 
 def open_win_canvas(parent,solicitud_id=None):
     win=crear_ventana(parent,"Seguimiento",1060,760)
-    win.minsize(960,700)
+    if isinstance(win,tk.Toplevel):win.minsize(960,700)
     frame=ttk.Frame(win,padding=22);frame.pack(fill="both",expand=True)
     acciones=ttk.Frame(frame);acciones.pack(side="bottom",fill="x")
     simulacion=tk.BooleanVar(value=False)
@@ -106,7 +106,7 @@ def open_win_canvas(parent,solicitud_id=None):
 
     def cambiar(nuevo_estado):
         if not actual or not simulacion.get():return
-        if not messagebox.askyesno("Simular avance",f"¿Marcar como {datos.ESTADOS[nuevo_estado]} en este prototipo?",parent=win):return
+        if not messagebox.askyesno("Simular avance",f"¿Marcar como {datos.ESTADOS[nuevo_estado]} en este prototipo?",parent=win.winfo_toplevel()):return
         try:datos.actualizar_estado(actual["id"],nuevo_estado)
         except (ValueError,OSError,datos.sqlite3.Error) as error:aviso_error(win,error);return
         actualizar();notificar_cambio(win)
@@ -117,7 +117,7 @@ def open_win_canvas(parent,solicitud_id=None):
         plan=datos.obtener_plan(actual["trabajador_id"])
         porcentaje=datos.COMISION_PRO_PORCENTAJE if plan["plan"]=="pro" else datos.COMISION_PORCENTAJE
         cot=crear_ventana(win,"Cotización de ejemplo",740,650)
-        cot.minsize(700,600)
+        if isinstance(cot,tk.Toplevel):cot.minsize(700,600)
         box=ttk.Frame(cot,padding=22);box.pack(fill="both",expand=True)
         pie=ttk.Frame(box);pie.pack(side="bottom",fill="x")
         encabezado(box,"Cotización de ejemplo","Simula la propuesta de un prestador. No se realiza un cobro.")
@@ -140,14 +140,14 @@ def open_win_canvas(parent,solicitud_id=None):
         def guardar():
             try:datos.registrar_cotizacion(identificador,importe.get(),materiales.get(),condiciones.get("1.0","end").strip())
             except (ValueError,OSError,datos.sqlite3.Error) as error:aviso_error(cot,error);return
-            cot.destroy();actualizar();notificar_cambio(win)
+            cerrar_vista(cot);actualizar();notificar_cambio(win)
         ttk.Button(pie,text="Guardar cotización",style="Primary.TButton",command=guardar).pack(side="left")
-        ttk.Button(pie,text="Cerrar",command=cot.destroy).pack(side="right")
+        ttk.Button(pie,text="Cerrar",command=lambda:cerrar_vista(cot)).pack(side="right")
 
     cotizar_btn=ttk.Button(acciones,text="Crear cotización",command=cotizar);cotizar_btn.pack(side="left")
     iniciar_btn=ttk.Button(acciones,text="Iniciar servicio",command=lambda:cambiar("en_proceso"));iniciar_btn.pack(side="left",padx=8)
     finalizar_btn=ttk.Button(acciones,text="Finalizar servicio",command=lambda:cambiar("completada"));finalizar_btn.pack(side="left")
-    ttk.Button(acciones,text="Cerrar",command=win.destroy).pack(side="right")
+    ttk.Button(acciones,text="Cerrar",command=lambda:cerrar_vista(win)).pack(side="right")
     combo.bind("<<ComboboxSelected>>",elegir);canvas.bind("<Configure>",dibujar)
     win.bind("<<DatosActualizados>>",actualizar)
     win.actualizar=actualizar;win.canvas=canvas

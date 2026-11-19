@@ -6,12 +6,12 @@ from ..core.servicios import obtener_servicios
 from ..core.trabajadores import obtener_trabajadores
 from ..core import datos
 from .win_form import open_win_form
-from .ui import crear_ventana, encabezado, tarjeta, etiqueta, aviso_error, notificar_cambio, GRIS, VERDE, TEXTO
+from .ui import cerrar_vista, crear_ventana, encabezado, tarjeta, etiqueta, aviso_error, notificar_cambio, GRIS, VERDE, TEXTO
 
 
 def open_win_list(parent, categoria=None):
     win = crear_ventana(parent, "Buscar servicio", 1100, 740)
-    win.minsize(980, 640)
+    if isinstance(win,tk.Toplevel):win.minsize(980, 640)
     frame = ttk.Frame(win, padding=22)
     frame.pack(fill="both", expand=True)
     encabezado(frame, "Buscar servicio", "1. Elige un oficio    2. Toca un trabajador    3. Solicita el servicio")
@@ -137,7 +137,7 @@ def open_win_list(parent, categoria=None):
 
     def seleccionar_trabajador():
         if not obtener_seleccion():
-            messagebox.showwarning("Elige un trabajador", "Primero selecciona una fila de la tabla.", parent=win)
+            messagebox.showwarning("Elige un trabajador", "Primero selecciona una fila de la tabla.", parent=win.winfo_toplevel())
             return
         mostrar_detalles()
         detalle.focus_set()
@@ -145,10 +145,10 @@ def open_win_list(parent, categoria=None):
     def solicitar_servicio():
         trabajador = obtener_seleccion()
         if not trabajador:
-            messagebox.showwarning("Elige un trabajador", "Primero selecciona una fila de la tabla.", parent=win)
+            messagebox.showwarning("Elige un trabajador", "Primero selecciona una fila de la tabla.", parent=win.winfo_toplevel())
             return
         if not trabajador["disponible"]:
-            messagebox.showwarning("No disponible", "Este trabajador no está disponible. Elige otro.", parent=win)
+            messagebox.showwarning("No disponible", "Este trabajador no está disponible. Elige otro.", parent=win.winfo_toplevel())
             return
         servicio = next(s for s in servicios if s["id"] == trabajador["servicio_id"])
         def mostrar_solicitud(identificador):
@@ -200,7 +200,7 @@ def open_win_list(parent, categoria=None):
 
     ttk.Button(botones, text="Seleccionar trabajador", command=seleccionar_trabajador).pack(side="left")
     ttk.Button(botones, text="Solicitar servicio", style="Primary.TButton", command=solicitar_servicio).pack(side="left", padx=8)
-    ttk.Button(botones, text="Cerrar", command=win.destroy).pack(side="right")
+    ttk.Button(botones, text="Cerrar", command=lambda:cerrar_vista(win)).pack(side="right")
     filtro.bind("<<ComboboxSelected>>", cargar_lista)
     orden.bind("<<ComboboxSelected>>", cargar_lista)
     busqueda.trace_add("write", lambda *_: cargar_lista())
