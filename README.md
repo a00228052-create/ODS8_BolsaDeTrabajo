@@ -26,6 +26,8 @@ También puedes presionar F5 usando la configuración incluida o abrir `iniciar_
 
 La solicitud pasa por Pendiente, Cotizada, Confirmada, En proceso y Finalizada. Se puede cancelar antes de iniciar el trabajo. Los botones de simulación solo permiten los cambios que corresponden al estado actual.
 
+Las secciones se muestran dentro de la misma ventana. El menú lateral queda visible y el botón Volver permite regresar sin perder los filtros o una solicitud que todavía estás llenando. Los detalles y las cotizaciones también se abren dentro de la app.
+
 Los datos se guardan automáticamente en `data/ofivanta.sqlite3`. Ese archivo se crea al abrir la app y no se debe subir a GitHub con datos personales. Para usar otra base local se puede definir la variable `OFIVANTA_DB_PATH` antes de iniciar.
 
 ## Archivos del proyecto
@@ -48,4 +50,4 @@ Desde la carpeta del proyecto:
 python -m unittest discover -s tests -v
 ```
 
-Las pruebas usan bases temporales. Comprueban filtros, formularios, guardado, cotizaciones, cambios de estado y apertura desde el menú. Las pruebas de ventanas necesitan una sesión de escritorio con tkinter.
+Las 53 pruebas usan bases temporales. Comprueban filtros, formularios, guardado, cotizaciones, cambios de estado y navegación desde el menú. También revisan que las secciones no abran ventanas adicionales y que Volver conserve el borrador del formulario. Las pruebas de ventanas necesitan una sesión de escritorio con tkinter.
