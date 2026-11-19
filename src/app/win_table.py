@@ -4,12 +4,12 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from tkinter.scrolledtext import ScrolledText
 from ..core import datos
-from .ui import crear_ventana, encabezado, aviso_error, notificar_cambio, GRIS, dinero, fecha_corta
+from .ui import cerrar_vista, crear_ventana, encabezado, aviso_error, notificar_cambio, GRIS, dinero, fecha_corta
 
 
 def open_win_table(parent):
     win = crear_ventana(parent,"Mis solicitudes",1120,740)
-    win.minsize(900,560)
+    if isinstance(win,tk.Toplevel):win.minsize(900,560)
     frame = ttk.Frame(win,padding=22);frame.pack(fill="both",expand=True)
     encabezado(frame,"Mis solicitudes","Revisa tus trabajos, acepta una cotización o consulta el seguimiento.")
     filtros = ttk.Frame(frame);filtros.pack(fill="x",pady=(0,14))
@@ -39,7 +39,7 @@ def open_win_table(parent):
     def seleccion():
         filas = tabla.selection()
         if not filas:
-            messagebox.showwarning("Selecciona una solicitud","Elige una fila de la tabla para continuar.",parent=win)
+            messagebox.showwarning("Selecciona una solicitud","Elige una fila de la tabla para continuar.",parent=win.winfo_toplevel())
             return None
         return registros.get(filas[0])
 
@@ -73,11 +73,11 @@ def open_win_table(parent):
 
     def cancelar(s,detalle=None):
         if s["estado"] not in ("pendiente","cotizada","cotizacion_aceptada"):
-            messagebox.showinfo("No se puede cancelar","Solo puedes cancelar antes de iniciar el trabajo.",parent=detalle or win);return
-        if not messagebox.askyesno("Cancelar solicitud",f"¿Cancelar la solicitud #{s['numero']} de {s['servicio']}?",parent=detalle or win):return
+            messagebox.showinfo("No se puede cancelar","Solo puedes cancelar antes de iniciar el trabajo.",parent=(detalle or win).winfo_toplevel());return
+        if not messagebox.askyesno("Cancelar solicitud",f"¿Cancelar la solicitud #{s['numero']} de {s['servicio']}?",parent=(detalle or win).winfo_toplevel()):return
         try:datos.cancelar_solicitud(s["id"])
         except (ValueError,OSError,datos.sqlite3.Error) as error:aviso_error(detalle or win,error);return
-        if detalle:detalle.destroy()
+        if detalle:cerrar_vista(detalle)
         actualizar();notificar_cambio(win)
 
     def ver_detalles():
@@ -90,8 +90,8 @@ def open_win_table(parent):
 
     def exportar():
         if not visibles:
-            messagebox.showinfo("Sin resultados","No hay solicitudes visibles para exportar.",parent=win);return
-        ruta=filedialog.asksaveasfilename(parent=win,title="Exportar solicitudes",defaultextension=".csv",
+            messagebox.showinfo("Sin resultados","No hay solicitudes visibles para exportar.",parent=win.winfo_toplevel());return
+        ruta=filedialog.asksaveasfilename(parent=win.winfo_toplevel(),title="Exportar solicitudes",defaultextension=".csv",
             initialfile="solicitudes_ofivanta.csv",filetypes=[("Archivo CSV","*.csv")])
         if not ruta:return
         try:
@@ -102,13 +102,13 @@ def open_win_table(parent):
                         str(s["importe"]) if s["importe"] is not None else "Por cotizar",s["estado_texto"]]
                     writer.writerow(["'"+v if str(v).startswith(("=","+","-","@")) else v for v in fila])
         except OSError as error:aviso_error(win,error);return
-        messagebox.showinfo("Archivo guardado","Las solicitudes visibles se exportaron correctamente.",parent=win)
+        messagebox.showinfo("Archivo guardado","Las solicitudes visibles se exportaron correctamente.",parent=win.winfo_toplevel())
 
     ttk.Button(botones,text="Ver detalles",style="Primary.TButton",command=ver_detalles).pack(side="left")
     ttk.Button(botones,text="Seguimiento",command=seguimiento).pack(side="left",padx=8)
     ttk.Button(botones,text="Cancelar solicitud",style="Danger.TButton",command=cancelar_seleccion).pack(side="left")
     ttk.Button(botones,text="Exportar CSV",command=exportar).pack(side="right",padx=(8,0))
-    ttk.Button(botones,text="Cerrar",command=win.destroy).pack(side="right")
+    ttk.Button(botones,text="Cerrar",command=lambda:cerrar_vista(win)).pack(side="right")
     estado.bind("<<ComboboxSelected>>",actualizar);busqueda.trace_add("write",lambda *_:actualizar())
     tabla.bind("<Double-1>",lambda e:ver_detalles());win.bind("<<DatosActualizados>>",actualizar)
     win.actualizar=actualizar;win.tabla=tabla
@@ -117,7 +117,7 @@ def open_win_table(parent):
 
 def abrir_detalles(parent,solicitud_id,on_change=None):
     win=crear_ventana(parent,"Detalle de solicitud",840,740)
-    win.minsize(780,680)
+    if isinstance(win,tk.Toplevel):win.minsize(780,680)
     frame=ttk.Frame(win,padding=22);frame.pack(fill="both",expand=True)
     encabezado(frame,"Detalle de solicitud","Elige una cotización y revisa sus condiciones antes de aceptarla.")
     resumen=ttk.Label(frame,text="",style="Subtitle.TLabel");resumen.pack(anchor="w",pady=(0,8))
@@ -143,7 +143,7 @@ def abrir_detalles(parent,solicitud_id,on_change=None):
 
     def cargar(event=None):
         datos_s=datos.obtener_solicitud(solicitud_id)
-        if not datos_s:win.destroy();return
+        if not datos_s:cerrar_vista(win);return
         solicitud.clear();solicitud.update(datos_s)
         resumen.configure(text=f"#{datos_s['numero']} · {datos_s['servicio']} · {datos_s['estado_texto']}")
         texto=(f"Trabajador: {datos_s['trabajador']} · {datos_s['zona']}\nCliente: {datos_s['cliente']}\n"
@@ -180,7 +180,7 @@ def abrir_detalles(parent,solicitud_id,on_change=None):
         mensaje=(f"¿Aceptar la cotización por ${q['importe']:,.2f} MXN?\n"
             f"Materiales: {'incluidos' if q['materiales_incluidos'] else 'se cobran por separado'}\n\n{q['condiciones']}\n\n"
             "Esto confirma la solicitud en el prototipo. No se realiza ningún pago.")
-        if not messagebox.askyesno("Aceptar cotización",mensaje,parent=win):return
+        if not messagebox.askyesno("Aceptar cotización",mensaje,parent=win.winfo_toplevel()):return
         try:datos.aceptar_cotizacion(q["id"])
         except (ValueError,OSError,datos.sqlite3.Error) as error:aviso_error(win,error);return
         cargar();notificar_cambio(win)
@@ -192,6 +192,6 @@ def abrir_detalles(parent,solicitud_id,on_change=None):
         from .win_canvas import open_win_canvas
         open_win_canvas(win,solicitud_id)
     ttk.Button(botones,text="Ver seguimiento",command=seguimiento).pack(side="left",padx=8)
-    ttk.Button(botones,text="Cerrar",command=win.destroy).pack(side="right")
+    ttk.Button(botones,text="Cerrar",command=lambda:cerrar_vista(win)).pack(side="right")
     cot.bind("<<TreeviewSelect>>",elegir);win.bind("<<DatosActualizados>>",cargar)
     cargar();return win

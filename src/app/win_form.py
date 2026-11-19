@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from ..core.datos import guardar_solicitud as _guardar_solicitud
 from ..core import datos
-from .ui import crear_ventana, encabezado, tarjeta, etiqueta, aviso_error, notificar_cambio, FONDO, GRIS, VERDE
+from .ui import cerrar_vista, crear_ventana, encabezado, tarjeta, etiqueta, aviso_error, notificar_cambio, FONDO, GRIS, VERDE
 
 
 class VentanaSolicitud:
@@ -16,8 +16,10 @@ class VentanaSolicitud:
         self.on_submit=on_submit
         self.guardando=False
         self.ventana=crear_ventana(parent,"Solicitar servicio",760,730)
-        self.ventana.transient(parent.winfo_toplevel())
-        self.ventana.protocol("WM_DELETE_WINDOW",self.cerrar)
+        self.ventana.formulario=self
+        if isinstance(self.ventana,tk.Toplevel):
+            self.ventana.transient(parent.winfo_toplevel())
+            self.ventana.protocol("WM_DELETE_WINDOW",self.cerrar)
         frame=ttk.Frame(self.ventana,padding=22);frame.pack(fill="both",expand=True)
         encabezado(frame,"Cuéntanos qué necesitas","Envía una solicitud. El precio y la fecha de atención se acuerdan en la cotización.")
         pie=ttk.Frame(frame);pie.pack(side="bottom",fill="x",pady=(12,0))
@@ -28,13 +30,15 @@ class VentanaSolicitud:
         area=ttk.Frame(frame);area.pack(fill="both",expand=True)
         canvas=tk.Canvas(area,bg=FONDO,highlightthickness=0)
         self.canvas=canvas
+        self.ventana.scroll_canvas=canvas
         barra=ttk.Scrollbar(area,orient="vertical",command=canvas.yview)
         canvas.configure(yscrollcommand=barra.set);canvas.pack(side="left",fill="both",expand=True);barra.pack(side="right",fill="y")
         contenido=ttk.Frame(canvas)
         elemento=canvas.create_window((0,0),window=contenido,anchor="nw")
         contenido.bind("<Configure>",lambda e:canvas.configure(scrollregion=canvas.bbox("all")))
         canvas.bind("<Configure>",lambda e:canvas.itemconfigure(elemento,width=e.width))
-        self.ventana.bind("<MouseWheel>",lambda e:canvas.yview_scroll(-1 if e.delta>0 else 1,"units"))
+        if isinstance(self.ventana,tk.Toplevel):
+            self.ventana.bind("<MouseWheel>",lambda e:canvas.yview_scroll(-1 if e.delta>0 else 1,"units"))
 
         seleccion=tarjeta(contenido,padx=16,pady=14);seleccion.pack(fill="x",pady=(0,14))
         etiqueta(seleccion,"SERVICIO Y TRABAJADOR",color=GRIS).pack(anchor="w")
@@ -104,14 +108,14 @@ class VentanaSolicitud:
             "serv-limpieza":"Necesito limpieza general de una casa de dos habitaciones. Quisiera acordar qué materiales incluye.",
             "serv-pintura":"Quiero pintar las paredes de una habitación. Necesito una cotización de mano de obra y materiales."}
         if self.descripcion.get("1.0","end").strip():
-            if not messagebox.askyesno("Cambiar descripción","¿Reemplazar tu descripción por un ejemplo editable?",parent=self.ventana):return
+            if not messagebox.askyesno("Cambiar descripción","¿Reemplazar tu descripción por un ejemplo editable?",parent=self.ventana.winfo_toplevel()):return
         self.descripcion.delete("1.0","end")
         self.descripcion.insert("1.0",ejemplos.get(self.servicio.get("id") if isinstance(self.servicio,dict) else "",
             "Necesito ayuda con un trabajo en casa. Quisiera acordar una revisión, el alcance y el costo."))
 
     def _validar(self):
         if not isinstance(self.servicio,dict) or not isinstance(self.trabajador,dict):
-            messagebox.showwarning("Elige un servicio","Selecciona el oficio y el trabajador desde el catálogo.",parent=self.ventana)
+            messagebox.showwarning("Elige un servicio","Selecciona el oficio y el trabajador desde el catálogo.",parent=self.ventana.winfo_toplevel())
             return None
         campos={"cliente":self.nombre.get().strip(),"contacto":self.contacto.get().strip(),
             "domicilio":self.domicilio.get().strip(),"descripcion":self.descripcion.get("1.0","end").strip(),
@@ -130,7 +134,7 @@ class VentanaSolicitud:
             f"Nombre: {campos['cliente']}\nContacto: {campos['contacto']}\nDomicilio: {campos['domicilio']}\n"
             f"Fecha deseada: {campos['fecha_deseada']}\nHorario preferido: {campos['horario']}\nPrioridad: {campos['urgencia']}\n\n{campos['descripcion']}\n\n"
             "Se registrará como Pendiente. La cotización se acepta después y no se realiza ningún pago.\n\n¿Enviar solicitud?")
-        if messagebox.askyesno("Revisar solicitud",resumen,parent=self.ventana):self._guardar(campos)
+        if messagebox.askyesno("Revisar solicitud",resumen,parent=self.ventana.winfo_toplevel()):self._guardar(campos)
 
     def _guardar(self,campos):
         self.guardando=True;self.enviar_btn.state(["disabled"])
@@ -141,14 +145,30 @@ class VentanaSolicitud:
         except (ValueError,OSError,datos.sqlite3.Error,TypeError) as error:
             self.guardando=False;self.enviar_btn.state(["!disabled"]);aviso_error(self.ventana,error);return
         notificar_cambio(self.ventana)
-        messagebox.showinfo("Solicitud registrada",f"Tu solicitud #{str(identificador)[:8].upper()} quedó pendiente de cotización.\nPuedes consultarla en Mis solicitudes.",parent=self.ventana)
+        messagebox.showinfo("Solicitud registrada",f"Tu solicitud #{str(identificador)[:8].upper()} quedó pendiente de cotización.\nPuedes consultarla en Mis solicitudes.",parent=self.ventana.winfo_toplevel())
         self.cerrar()
         if self.on_submit:self.on_submit(str(identificador))
 
     def cerrar(self):
-        self.ventana.destroy()
+        cerrar_vista(self.ventana)
         if self.on_close:self.on_close()
 
 
 def open_win_form(parent,servicio=None,trabajador=None,guardar_callback=None,on_close=None,on_submit=None):
+    raiz=parent._root()
+    if hasattr(raiz,"navegador"):
+        anterior=raiz.navegador.paginas.get("Solicitar servicio")
+        if anterior is not None and hasattr(anterior,"formulario"):
+            formulario=anterior.formulario
+            misma_seleccion=(isinstance(servicio,dict) and isinstance(trabajador,dict)
+                and isinstance(formulario.servicio,dict) and isinstance(formulario.trabajador,dict)
+                and formulario.servicio.get("id")==servicio.get("id")
+                and formulario.trabajador.get("id")==trabajador.get("id"))
+            if misma_seleccion or servicio is None:
+                raiz.navegador.mostrar(anterior)
+                return formulario
+            tiene_datos=any(v.get().strip() for v in (formulario.nombre,formulario.contacto,formulario.domicilio)) or formulario.descripcion.get("1.0","end").strip()
+            if tiene_datos and not messagebox.askyesno("Cambiar trabajador","Hay una solicitud sin enviar. ¿Descartarla para elegir otro trabajador?",parent=raiz):
+                raiz.navegador.mostrar(anterior)
+                return formulario
     return VentanaSolicitud(parent,servicio,trabajador,guardar_callback,on_close,on_submit)

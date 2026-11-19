@@ -64,6 +64,9 @@ def aplicar_estilo(parent):
 
 def crear_ventana(parent, titulo, ancho=980, alto=650):
     aplicar_estilo(parent)
+    raiz=parent._root()
+    if hasattr(raiz,"navegador"):
+        return raiz.navegador.crear(titulo)
     win = tk.Toplevel(parent)
     win.title("Ofivanta | " + titulo)
     win.configure(bg=FONDO)
@@ -119,13 +122,13 @@ def aviso_error(win, error):
         mensaje = "No se pudieron guardar o leer los datos. Cierra otras copias de la app e inténtalo de nuevo."
     else:
         mensaje = str(error)
-    messagebox.showerror("Revisa estos datos", mensaje, parent=win)
+    messagebox.showerror("Revisa estos datos", mensaje, parent=win.winfo_toplevel())
 
 
 def notificar_cambio(parent):
     root = parent._root()
     def recorrer(widget):
-        if widget == root or isinstance(widget, tk.Toplevel):
+        if widget == root or isinstance(widget, (tk.Toplevel,Pantalla)):
             widget.event_generate("<<DatosActualizados>>", when="tail")
         for hijo in widget.winfo_children():
             recorrer(hijo)
@@ -246,3 +249,67 @@ def redondear_controles(root, estilo):
         boton.configure(style=variante)
 
     root.bind_class("TButton","<Map>",adaptar_fondo,add="+")
+
+
+class Pantalla(ttk.Frame):
+    """Una sección dentro de la ventana principal."""
+    def __init__(self,parent,navegador,titulo):
+        super().__init__(parent)
+        self.navegador=navegador
+        self.titulo=titulo
+
+
+class Navegador:
+    def __init__(self,contenedor,al_cambiar=None):
+        self.contenedor=contenedor
+        self.al_cambiar=al_cambiar
+        self.paginas={}
+        self.historial=[]
+        self.actual=None
+        contenedor.rowconfigure(0,weight=1)
+        contenedor.columnconfigure(0,weight=1)
+
+    def crear(self,titulo):
+        anterior=self.paginas.get(titulo)
+        if anterior is not None:
+            self.eliminar(anterior)
+        pantalla=Pantalla(self.contenedor,self,titulo)
+        self.paginas[titulo]=pantalla
+        self.mostrar(pantalla)
+        return pantalla
+
+    def mostrar(self,pantalla):
+        if self.actual is not None and self.actual.winfo_exists():
+            self.actual.grid_remove()
+        if pantalla in self.historial:
+            self.historial=self.historial[:self.historial.index(pantalla)+1]
+        else:
+            self.historial.append(pantalla)
+        pantalla.grid(row=0,column=0,sticky="nsew")
+        pantalla.tkraise()
+        self.actual=pantalla
+        if self.al_cambiar:self.al_cambiar(pantalla.titulo)
+
+    def volver(self):
+        if len(self.historial)<2:return
+        self.historial.pop()
+        self.mostrar(self.historial[-1])
+
+    def eliminar(self,pantalla):
+        self.historial=[p for p in self.historial if p is not pantalla]
+        if self.paginas.get(pantalla.titulo) is pantalla:
+            self.paginas.pop(pantalla.titulo)
+        if self.actual is pantalla:self.actual=None
+        pantalla.destroy()
+
+    def cerrar(self,pantalla):
+        visible=self.actual is pantalla
+        self.eliminar(pantalla)
+        if visible and self.historial:self.mostrar(self.historial[-1])
+
+
+def cerrar_vista(vista):
+    if isinstance(vista,Pantalla):
+        vista.navegador.cerrar(vista)
+    else:
+        vista.destroy()

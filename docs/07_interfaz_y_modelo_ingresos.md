@@ -4,6 +4,8 @@ Ofivanta. Interfaz y modelo de ingresos
 
 Se mantuvo la estructura del profesor: main.py, las cinco ventanas de src/app, los datos en src/core y las evidencias en docs. El menú Ir a permite abrir Inicio, Solicitar servicio, Buscar servicio, Mis solicitudes y Seguimiento. Las funciones nuevas se repartieron dentro de esos archivos.
 
+Antes, cada botón abría una ventana aparte y se terminaban amontonando. Ahora las secciones aparecen en la misma ventana principal, con el menú lateral siempre visible. Arriba está Volver para regresar a la pantalla anterior. Al volver se conservan los filtros y lo que se haya escrito en el formulario. Si se elige otro trabajador con una solicitud empezada, se pregunta antes de reemplazarla.
+
 El inicio ahora usa azul intenso, azul claro, blanco y texto oscuro. Tiene un logo propio, un degradado azul y botones redondeados. El botón principal lleva a la búsqueda de servicios. Los contadores muestran datos de la base local.
 
 ![Inicio](capturas/11_inicio.png)
@@ -15,6 +17,14 @@ En la búsqueda se muestran primero los controles necesarios: oficio, búsqueda 
 El formulario permite elegir Hoy o Mañana, un horario preferido y la prioridad. También tiene una descripción de ejemplo que se puede editar y un contador de caracteres. Después de enviar desde el catálogo se abre el historial con la solicitud seleccionada. La fecha y el horario siguen siendo preferencias que debe confirmar el trabajador.
 
 ![Formulario](capturas/11_formulario_detalle.png)
+
+Mis solicitudes, el detalle de cada solicitud y la creación de cotizaciones usan el mismo espacio y estilo. Cerrar o Cancelar regresa a la pantalla anterior. Los avisos de confirmación siguen apareciendo como diálogos normales del sistema. Los módulos también pueden abrirse por separado para probarlos.
+
+![Mis solicitudes](capturas/11_solicitudes.png)
+
+![Detalle y cotizaciones](capturas/11_cotizaciones.png)
+
+![Seguimiento](capturas/11_seguimiento.png)
 
 El modelo de ingresos combina comisión y suscripción. Básico no tiene mensualidad y usa una comisión del 10 %. Pro registra una cuota de ejemplo de $149 por 30 días y reduce la comisión al 7 % en nuevas cotizaciones. También habilita la agenda y el resumen por trabajador. El cliente no paga una comisión adicional sobre el importe acordado.
 
@@ -32,7 +42,7 @@ El resumen de ingresos cuenta comisiones solo de servicios finalizados y las cuo
 
 ![Ingresos simulados](capturas/11_ingresos.png)
 
-Se comprobaron 45 pruebas de datos y ventanas. Se revisó el acceso a las cinco ventanas desde el menú, el guardado, los favoritos, los planes, las comisiones y la selección después de enviar. También se revisaron las ventanas en ejecución y se corrigieron las esquinas blancas que aparecían al redondear los botones.
+Se comprobaron 53 pruebas de datos y ventanas. Se revisó el acceso a los cinco módulos desde el menú, el guardado, los favoritos, los planes, las comisiones y la selección después de enviar. También se comprobó que los detalles y las cotizaciones permanecen dentro de la app, que Volver conserva los datos y que no se pierde un borrador por cambiar de trabajador sin confirmar. Se revisaron las pantallas en ejecución con los botones redondeados y el estilo compartido.
 
 Las capturas usan una base temporal con datos de ejemplo, separada de los datos de uso de la app. Esta versión sigue siendo un prototipo local. Para contratar y cobrar de verdad faltan cuentas, permisos, un servidor compartido y una integración de pagos.
 
