@@ -1,49 +1,43 @@
-Ofivanta. Interfaz y modelo de ingresos
+Ofivanta. Cambios en la aplicación
 
 19 de noviembre de 2026
 
-Se mantuvo la estructura del profesor: main.py, las cinco ventanas de src/app, los datos en src/core y las evidencias en docs. El menú Ir a permite abrir Inicio, Solicitar servicio, Buscar servicio, Mis solicitudes y Seguimiento. Las funciones nuevas se repartieron dentro de esos archivos.
+La idea de Ofivanta es que una persona encuentre ayuda para un trabajo en su casa. Puede buscar un oficio, elegir a un trabajador y explicar lo que necesita antes de revisar una cotización.
 
-Antes, cada botón abría una ventana aparte y se terminaban amontonando. Ahora las secciones aparecen en la misma ventana principal, con el menú lateral siempre visible. Arriba está Volver para regresar a la pantalla anterior. Al volver se conservan los filtros y lo que se haya escrito en el formulario. Si se elige otro trabajador con una solicitud empezada, se pregunta antes de reemplazarla.
-
-El inicio ahora usa azul intenso, azul claro, blanco y texto oscuro. Tiene un logo propio, un degradado azul y botones redondeados. El botón principal lleva a la búsqueda de servicios. Los contadores muestran datos de la base local.
+Se mantuvieron main.py y las cinco ventanas del profesor. El inicio tiene el logo de una casa dentro de una O, un fondo azul con degradado y botones redondeados.
 
 ![Inicio](capturas/11_inicio.png)
 
-En la búsqueda se muestran primero los controles necesarios: oficio, búsqueda y disponibilidad. Los favoritos y el orden están en Más filtros. Al tocar un trabajador se ve su perfil; Solicitar servicio abre el formulario con esa persona. Los favoritos se guardan en esta computadora.
+Antes se abrían varias ventanas y se amontonaban. Ahora todo aparece en la ventana principal. El menú queda visible y Volver permite regresar sin perder los filtros o lo que se estaba escribiendo. Si ya hay un formulario empezado y se elige otro trabajador, aparece una pregunta antes de cambiarlo.
+
+En Buscar servicio se puede filtrar por oficio, nombre, zona y disponibilidad. Al seleccionar a alguien aparecen sus datos. También se pueden guardar favoritos.
 
 ![Buscar servicio](capturas/11_catalogo.png)
 
-El formulario permite elegir Hoy o Mañana, un horario preferido y la prioridad. También tiene una descripción de ejemplo que se puede editar y un contador de caracteres. Después de enviar desde el catálogo se abre el historial con la solicitud seleccionada. La fecha y el horario siguen siendo preferencias que debe confirmar el trabajador.
+El formulario recibe al trabajador elegido. Pide nombre, contacto, domicilio, fecha y una descripción del trabajo. La fecha y el horario son preferencias que después debe confirmar el trabajador.
 
 ![Formulario](capturas/11_formulario_detalle.png)
 
-Mis solicitudes, el detalle de cada solicitud y la creación de cotizaciones usan el mismo espacio y estilo. Cerrar o Cancelar regresa a la pantalla anterior. Los avisos de confirmación siguen apareciendo como diálogos normales del sistema. Los módulos también pueden abrirse por separado para probarlos.
+Después de enviar, la solicitud aparece en Mis solicitudes. Desde ahí se consultan los detalles y se acepta una cotización. En Seguimiento se ve si está pendiente, cotizada, confirmada, en proceso o finalizada. También se puede cancelar antes de iniciar el trabajo.
 
 ![Mis solicitudes](capturas/11_solicitudes.png)
 
-![Detalle y cotizaciones](capturas/11_cotizaciones.png)
+![Detalle de solicitud](capturas/11_cotizaciones.png)
 
 ![Seguimiento](capturas/11_seguimiento.png)
 
-El modelo de ingresos combina comisión y suscripción. Básico no tiene mensualidad y usa una comisión del 10 %. Pro registra una cuota de ejemplo de $149 por 30 días y reduce la comisión al 7 % en nuevas cotizaciones. También habilita la agenda y el resumen por trabajador. El cliente no paga una comisión adicional sobre el importe acordado.
+Para generar ingresos se propone una comisión por trabajo terminado y un plan opcional para trabajadores. Básico cobra el 10 % sin mensualidad. Pro cobra el 7 % en nuevas cotizaciones y $149 por 30 días. Incluye agenda y resumen de ganancias. El porcentaje se guarda en cada cotización para que cambiar de plan no modifique lo que ya se ofreció.
 
-La calculadora compara lo que le quedaría al trabajador con ambos planes. Por ejemplo, con 20 trabajos de $500, el volumen sería $10,000. Básico descontaría $1,000 de comisión y dejaría $9,000. Pro descontaría $700 de comisión y $149 de cuota, dejando $9,151. Con pocos trabajos puede convenir el plan Básico; la calculadora también muestra ese caso. El cálculo no descuenta materiales, impuestos u otros gastos del trabajador.
+Por ejemplo, con 20 trabajos de $500, Básico dejaría $9,000 después de la comisión. Pro dejaría $9,151 después de la comisión y la cuota. La calculadora permite comparar otros casos. Estas cantidades no descuentan materiales, impuestos ni otros gastos.
 
-![Planes y comparación](capturas/11_planes.png)
-
-El porcentaje se guarda en la cotización para que una activación, cancelación o vencimiento de Pro no cambie lo que ya se ofreció. Reactivar el mismo periodo no registra otra cuota. Al vencer el periodo no se renueva solo.
-
-La agenda de Pro muestra las solicitudes abiertas del trabajador elegido. Los datos y perfiles son ficticios y no hay cuentas reales de prestadores en esta versión.
+![Planes](capturas/11_planes.png)
 
 ![Agenda](capturas/11_agenda.png)
 
-El resumen de ingresos cuenta comisiones solo de servicios finalizados y las cuotas de periodos Pro activados en la demostración. No suma solicitudes pendientes o canceladas como si fueran dinero recibido.
+El apartado de ingresos suma las comisiones de trabajos finalizados y las cuotas Pro de la demostración.
 
-![Ingresos simulados](capturas/11_ingresos.png)
+![Ingresos](capturas/11_ingresos.png)
 
-Se comprobaron 53 pruebas de datos y ventanas. Se revisó el acceso a los cinco módulos desde el menú, el guardado, los favoritos, los planes, las comisiones y la selección después de enviar. También se comprobó que los detalles y las cotizaciones permanecen dentro de la app, que Volver conserva los datos y que no se pierde un borrador por cambiar de trabajador sin confirmar. Se revisaron las pantallas en ejecución con los botones redondeados y el estilo compartido.
+Pasaron 53 pruebas. Se revisaron el guardado, las cotizaciones, los planes y la navegación. También se abrieron las pantallas para comprobar su diseño. Las capturas usan datos de ejemplo separados de los datos de uso de la app.
 
-Las capturas usan una base temporal con datos de ejemplo, separada de los datos de uso de la app. Esta versión sigue siendo un prototipo local. Para contratar y cobrar de verdad faltan cuentas, permisos, un servidor compartido y una integración de pagos.
-
-El logo de la aplicación está en assets/ofivanta_logo_azul.png. Combina una casa con la letra O de Ofivanta y tiene fondo transparente para usarlo en el inicio y en el menú.
+Esta versión funciona de forma local, con perfiles ficticios y sin cobros. Para ofrecer el servicio a personas reales todavía hacen falta cuentas, un servidor compartido y un sistema de pagos.

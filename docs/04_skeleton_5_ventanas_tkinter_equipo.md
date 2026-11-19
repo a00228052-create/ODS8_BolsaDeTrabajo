@@ -1,228 +1,63 @@
-# Sesión 3 — Esqueleto de Ofivanta con cinco ventanas tkinter
+Sesión 3. Base de Ofivanta
 
-**Proyecto:** Ofivanta — Servicios con confianza.  
-**ODS:** 8, Trabajo Decente y Crecimiento Económico.  
-**Fecha:** 10 de noviembre de 2026.
+Equipo Ofivanta
+ODS 8: Trabajo Decente y Crecimiento Económico
+10 de noviembre de 2026
 
-## Objetivo y alcance
+En esta sesión se preparó la base del proyecto con un menú y cinco ventanas en tkinter. La idea era tener una parte para cada integrante y después adaptarla a una aplicación de servicios para el hogar.
 
-Construir una estructura modular en Python con una ventana principal y cinco
-subventanas integradas. El proyecto retoma la idea de conectar clientes con
-profesionales de oficios. En esta sesión se demuestra la interfaz mínima:
-bienvenida, captura de datos, lista de servicios, tabla CSV y dibujo.
-Los registros son ficticios. Todavía no hay autenticación, verificación de
-identidad, reputación, conexión a Internet ni base de datos.
+Este documento muestra cómo era esa primera versión. Las funciones actuales están en [Cambios en la aplicación](07_interfaz_y_modelo_ingresos.md).
 
-## Estructura
+Para abrir el proyecto, se necesita Python con tkinter. Desde la carpeta del repositorio se ejecuta:
 
 ```text
-.vscode/
-  launch.json
-data/
-  sample.csv
-docs/
-  04_skeleton_5_ventanas_tkinter_equipo.md
-  capturas/
-    01_principal.png
-    02_home.png
-    03_formulario.png
-    04_lista.png
-    05_tabla.png
-    06_canvas.png
-src/
-  __init__.py
-  app/
-    __init__.py
-    main.py
-    win_home.py
-    win_form.py
-    win_list.py
-    win_table.py
-    win_canvas.py
-  core/
-    __init__.py
-tests/
-  test_app.py
-.gitignore
-README.md
+python -m src.app.main
 ```
 
-`core` queda reservado para utilidades compartidas futuras; no se requiere
-`helpers.py` en este esqueleto. Los archivos `__init__.py` definen paquetes.
+También se incluyó una configuración de VS Code para ejecutarlo con F5. No se necesitan paquetes adicionales.
 
-## Instalación y ejecución
+main.py abre el menú y conecta los cinco archivos de src/app. Los datos de ejemplo están en data y las capturas en docs/capturas.
 
-1. Clonar `https://github.com/a00228052-create/ODS8_BolsaDeTrabajo` y abrir la
-   carpeta raíz en VS Code.
-2. Instalar Python para Windows con tkinter. Comprobarlo con `python -m tkinter`.
-3. Crear el entorno virtual desde la raíz:
+Así funcionaban las ventanas de la base:
 
-   ```powershell
-   python -m venv .venv
-   ```
+1. win_home.py mostraba la bienvenida y un mensaje sobre el proyecto.
+2. win_form.py pedía nombre y edad, revisaba los campos y permitía guardarlos en un archivo de texto.
+3. win_list.py permitía agregar texto a una lista, eliminar una selección o limpiar todo. La lista no se guardaba al cerrar.
+4. win_table.py leía data/sample.csv y mostraba sus tres registros en una tabla.
+5. win_canvas.py dibujaba un rectángulo, un óvalo, una línea y un texto.
 
-4. Instalar en VS Code las extensiones Python, Pylance y Python Debugger de Microsoft.
-5. Usar **Python: Select Interpreter** y seleccionar `.venv\Scripts\python.exe`.
-6. En **Run and Debug**, elegir **Ejecutar Ofivanta (src.app.main)** y presionar F5.
+Los registros del CSV eran ejemplos de plomería, electricidad y carpintería. Sus cantidades eran ficticias y no representaban salarios ni calificaciones.
 
-También se puede ejecutar sin activar el entorno en PowerShell:
+La distribución del equipo fue:
 
-```powershell
-.\.venv\Scripts\python.exe -m src.app.main
-```
+Laira Fernanda Barroso Villa: bienvenida, src/app/win_home.py.
 
-`launch.json` usa `module: src.app.main`, `cwd: ${workspaceFolder}` y el tipo
-`debugpy`. Los imports relativos resuelven los módulos del mismo paquete sin
-modificar `PYTHONPATH`. Se debe ejecutar desde la raíz, como módulo, y no abrir
-`main.py` como un script independiente. No hay dependencias de pip.
+Irma Gloria Núñez Romo: formulario, src/app/win_form.py.
 
-## Explicación del código
+Gonzalo Martínez Zermeño: lista, src/app/win_list.py.
 
-### `src/app/main.py`: ventana principal
+Leonardo Alfaro García: tabla y CSV, src/app/win_table.py y data/sample.csv.
 
-Importa las cinco funciones `open_win_*`. `main()` crea una sola instancia
-`tk.Tk`, establece el título y tamaño y coloca un `ttk.Frame` con botones.
-Cada botón llama a una función mediante `lambda`, pasando `root` como padre.
-`root.mainloop()` procesa los eventos; **Salir** ejecuta `root.destroy()`.
-La condición `if __name__ == "__main__"` inicia la aplicación al ejecutarla
-como módulo. Las ventanas hijas usan `Toplevel`, por lo que no crean otros
-bucles principales.
+Jorge Fernando Villalobos García: dibujo, src/app/win_canvas.py.
 
-### `src/app/win_home.py`: bienvenida
+Luis Ernesto Guerrero García: integración, pruebas y documentación.
 
-`open_win_home(parent)` construye un `Toplevel` con `Label` y `Button`.
-**Mostrar mensaje** abre un `messagebox.showinfo` con la propuesta de Ofivanta
-y su relación con el ODS 8. **Cerrar** destruye únicamente la subventana.
+Las capturas de esa versión son:
 
-### `src/app/win_form.py`: formulario
+![Menú principal](capturas/01_principal.png)
 
-Dos `ttk.Entry` capturan nombre y edad. `validar_y_guardar()` elimina espacios
-externos mediante `strip()`, exige un nombre no vacío y comprueba con
-`isdigit()` que la edad contenga dígitos. No representa una verificación legal
-de edad. Los datos siguen siendo cadenas de texto.
+![Bienvenida](capturas/02_home.png)
 
-Si la validación pasa, `asksaveasfilename` solicita el destino `.txt`.
-Cancelar no guarda nada. El archivo se escribe con `with open` y UTF-8;
-un `try/except OSError` informa si falla la escritura. Un mensaje confirma
-el guardado. Se usa `grid` para alinear etiquetas y campos dentro del frame.
+![Formulario](capturas/03_formulario.png)
 
-### `src/app/win_list.py`: lista de servicios
+![Lista](capturas/04_lista.png)
 
-Un `tk.Listbox` almacena elementos durante la sesión. **Agregar** toma el
-texto del Entry, rechaza cadenas vacías, inserta al final y limpia el campo.
-**Eliminar seleccionado** obtiene el índice con `curselection()` y elimina
-el elemento seleccionado. **Limpiar** elimina todos los elementos.
-Estas operaciones cubren lo pedido en la consigna; no incluyen edición ni
-persistencia de la lista. `rowconfigure` y `columnconfigure` permiten expandirla.
+![Tabla](capturas/05_tabla.png)
 
-### `src/app/win_table.py`: tabla CSV
+![Canvas](capturas/06_canvas.png)
 
-`ttk.Treeview` presenta tres columnas: `nombre`, `valor1` y `valor2`.
-`csv.DictReader` interpreta la primera fila del CSV como encabezados y cada
-fila posterior como un diccionario. `tv.insert` agrega los valores a la tabla.
-La ruta se obtiene con `Path(__file__).resolve().parents[2] / "data" /
-"sample.csv"`, que apunta a `data` en la raíz del repositorio. La lectura
-usa UTF-8 para conservar los acentos. Si el archivo no existe, se muestra
-un aviso y el botón de cierre sigue disponible.
+En esa revisión pasaron seis pruebas. Se comprobaron los botones, la validación y el guardado del formulario, las operaciones de la lista, la lectura del CSV y las figuras. Las ventanas se abrieron para tomar las capturas; F5 no se probó desde VS Code en esa revisión.
 
-### `data/sample.csv`: datos de ejemplo
+Si aparece un error al abrirlo, primero hay que comprobar que la terminal esté en la carpeta del proyecto y que Python tenga tkinter. Para la tabla también debe existir data/sample.csv.
 
-Contiene tres oficios: Plomería, Electricidad y Carpintería. `valor1` y `valor2`
-son cantidades ficticias sin unidades, conservadas del formato de la
-plantilla; no deben interpretarse como estadísticas, salarios o calificaciones.
-
-### `src/app/win_canvas.py`: dibujo
-
-Un `tk.Canvas` blanco contiene un rectángulo, un óvalo con relleno azul,
-una línea y un texto. `create_rectangle`, `create_oval`, `create_line` y
-`create_text` reciben coordenadas en píxeles desde la esquina superior izquierda.
-Demuestra objetos gráficos básicos, sin herramientas de dibujo interactivo.
-
-### Configuración y pruebas
-
-`.vscode/launch.json` inicia la misma entrada modular que la terminal.
-`.gitignore` excluye `.venv`, cachés y bytecode. `tests/test_app.py` verifica
-los widgets y sus acciones con `unittest`; los diálogos se sustituyen durante
-las pruebas y el archivo de prueba se guarda en una carpeta temporal.
-
-## Primer Happy Path
-
-1. Iniciar Ofivanta y ver los cinco accesos del menú.
-2. Abrir Bienvenida, mostrar el mensaje y cerrar la subventana.
-3. Abrir Formulario, escribir un nombre y una edad numérica, pulsar Guardar,
-   elegir un `.txt` y recibir la confirmación.
-4. Abrir Lista, agregar un servicio, seleccionarlo y eliminarlo; agregar otros
-   y usar Limpiar.
-5. Abrir Tabla y comprobar los tres registros del CSV.
-6. Abrir Canvas y observar las cuatro figuras.
-7. Cerrar las subventanas y salir desde el menú principal.
-
-## Evidencias de ejecución
-
-Capturas reales de la aplicación ejecutada en Windows:
-
-### Ventana principal
-
-![Ventana principal con los cinco accesos](capturas/01_principal.png)
-
-### Ventana 1 — Bienvenida
-
-![Bienvenida de Ofivanta](capturas/02_home.png)
-
-### Ventana 2 — Formulario
-
-![Campos de nombre y edad, y botones Guardar y Cerrar](capturas/03_formulario.png)
-
-### Ventana 3 — Lista
-
-![Listbox y operaciones Agregar, Eliminar seleccionado y Limpiar](capturas/04_lista.png)
-
-### Ventana 4 — Tabla
-
-![Treeview con los tres registros leídos del CSV](capturas/05_tabla.png)
-
-### Ventana 5 — Canvas
-
-![Rectángulo, óvalo, línea y texto en Canvas](capturas/06_canvas.png)
-
-## Verificación
-
-Se ejecutó `python -m unittest discover -s tests -v` con Python 3.14.7 en
-Windows: **6 pruebas aprobadas**. Se comprobaron navegación y cierre de las
-cinco ventanas, mensaje de bienvenida, errores de nombre/edad, cancelación y
-guardado del formulario, agregar/eliminar/limpiar, lectura de las tres filas
-del CSV y los cuatro objetos gráficos. También se verificó la compilación
-de los módulos con `compileall` y se abrieron las seis ventanas para las capturas.
-La configuración de VS Code está incluida; la sesión F5 no se ejecutó desde
-VS Code durante esta revisión.
-
-## Solución de problemas
-
-- **Imports:** ejecutar `python -m src.app.main` desde la raíz del proyecto.
-- **tkinter ausente:** reparar la instalación oficial de Python agregando Tcl/Tk.
-- **CSV ausente:** conservar `data/sample.csv` y sus tres encabezados.
-- **Intérprete incorrecto:** seleccionar el Python de `.venv` en VS Code.
-- **Guardado fallido:** elegir una carpeta con permisos de escritura.
-
-## Entrega
-
-El entregable de Canvas es el enlace del repositorio con el código,
-la configuración y este documento junto con las imágenes en `docs/capturas`.
-
-## Roles y distribución de responsabilidades
-
-Distribución asignada para esta entrega. Describe responsabilidades del equipo;
-no constituye un registro de autoría individual ni de contribuciones históricas.
-
-| Integrante | Responsabilidad asignada | Archivo o evidencia |
-| --- | --- | --- |
-| Laira Fernanda Barroso Villa | Ventana 1: bienvenida y mensaje | `src/app/win_home.py` |
-| Irma Gloria Núñez Romo | Ventana 2: formulario, validación y guardado | `src/app/win_form.py` |
-| Gonzalo Martínez Zermeño | Ventana 3: lista y operaciones básicas | `src/app/win_list.py` |
-| Leonardo Alfaro García | Ventana 4: tabla y datos CSV | `src/app/win_table.py`, `data/sample.csv` |
-| Jorge Fernando Villalobos García | Ventana 5: dibujo Canvas | `src/app/win_canvas.py` |
-| Luis Ernesto Guerrero García | Integración, depuración, pruebas y documentación | `main.py`, `launch.json`, `tests/`, `docs/` |
-
-El equipo tiene seis integrantes; se conserva una persona por subventana y
-se asigna la integración y documentación al sexto integrante.
-
+La entrega de esta sesión es el enlace al repositorio con el código, la configuración y estas capturas.
