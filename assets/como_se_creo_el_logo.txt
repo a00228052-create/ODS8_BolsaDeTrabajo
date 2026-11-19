@@ -1,0 +1,11 @@
+Logo de Ofivanta
+
+Herramienta utilizada: image_gen integrada. No se utilizó la alternativa por API o CLI.
+Archivo utilizado por la aplicación: ofivanta_logo_azul.png.
+La primera propuesta se conserva solo en el respaldo local. La aplicación y el repositorio utilizan el logo azul.
+
+Prompt de la propuesta original:
+Use case: logo-brand. Create a single finished brand symbol for Ofivanta, a Spanish-language app connecting homeowners with plumbers, electricians and other home-service workers. Minimal flat vector-like logo, warm approachable geometric design. Symbol only, NO lettering, NO words. Design a compact distinctive monogram: a rounded open ring suggesting an O, integrated with a simple pitched house roof and one warm orange rounded doorway, conveying home and helpful connection. Primary purple #6542AD with orange #EB8D4A, optional small cream detail #FFF7ED. Strong readable silhouette at 48 pixels. Centered square composition, generous safe margin, transparent background with true alpha. Clean precise edges, no gradient, no shadow, no 3D, no mockup, no photograph, no checkerboard printed into the image, no watermark. Output one symbol only, suitable for a desktop application icon.
+
+Prompt para adaptarlo a los colores elegidos:
+Edit target: the supplied Ofivanta symbol. Change COLORS ONLY; keep exactly the same geometry, house, ring, silhouette, placement, framing and transparent background. Replace all purple in the ring and house border with royal blue #2563EB. Replace orange doorway with deep blue #1E40AF. Replace cream/off-white interior house with pure white #FFFFFF. Use crisp flat solid colors, no texture or shading. Preserve genuine alpha transparency outside the symbol and the transparent open center. No text, no new elements, no background, no watermark. This logo will be used in a blue, light blue, white and near-black service application.
