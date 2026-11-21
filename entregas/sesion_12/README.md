@@ -3,13 +3,31 @@ Ofivanta. Entrega de la sesión 12
 Equipo Ofivanta
 20 de noviembre de 2026
 
-Esta carpeta reúne la presentación, el prototipo en Python y tkinter, el plan de mejora y el video de apoyo.
+Ofivanta es un prototipo para buscar servicios para el hogar, revisar un perfil y pedir una cotización antes de confirmar el trabajo. Está hecho con Python y tkinter y conserva las cinco ventanas del profesor dentro de la navegación de la app.
 
-- [Presentación de 10 diapositivas](01_presentacion_Ofivanta.pptx)
-- [Prototipo actual, sin .venv ni bases personales](02_prototipo.zip)
-- [Observaciones y plan de mejora](03_observaciones_y_plan_de_mejora.md)
-- [Video de demostración](04_video_demostracion.mp4)
+Archivos de la entrega:
 
-La exposición dura 5 minutos y tiene 5 minutos de retroalimentación. El prototipo conserva las cinco ventanas del profesor. Para ejecutarlo, descomprime el ZIP, abre el proyecto en VS Code y ejecuta python -m src.app.main con tu entorno virtual activo.
+- [01_presentacion_Ofivanta.pptx](01_presentacion_Ofivanta.pptx): presentación de hasta 10 diapositivas. Está pensada para una exposición de 5 minutos y 5 minutos adicionales de retroalimentación.
+- [02_prototipo.zip](02_prototipo.zip): código y recursos del prototipo del 20 de noviembre. Se entrega una sola copia comprimida en esta carpeta; no se repite aquí el árbol de código sin comprimir.
+- [03_observaciones_y_plan_de_mejora.md](03_observaciones_y_plan_de_mejora.md): espacio para registrar los comentarios reales y propuesta de trabajo del equipo.
+- [04_video_demostracion.mp4](04_video_demostracion.mp4): demostración anterior, del 19 de noviembre. Sirve como apoyo; el prototipo del día 20 tiene mejoras posteriores de interfaz y cuentas que no aparecen en ese video.
 
-El video se preparó el 19 de noviembre. El prototipo del día 20 incluye mejoras posteriores. Las observaciones del profesor deben registrarse después del ensayo; no se inventaron comentarios.
+Cómo abrir el prototipo en VS Code
+
+Descomprime 02_prototipo.zip y abre la carpeta que contiene src. Necesitas Python 3.10 o posterior con tkinter. En la terminal de VS Code, crea el entorno virtual:
+
+```powershell
+python -m venv .venv
+```
+
+En VS Code, usa Python: Select Interpreter y elige .venv\Scripts\python.exe. Después ejecuta desde la misma carpeta:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.app.main
+```
+
+El ZIP no incluye .venv, bases personales, respaldos ni contraseñas personales. El entorno y las bases locales se crean al usar la app. Para la demostración conviene crear una cuenta con datos ficticios o entrar como invitado. Google y Apple todavía no conectan cuentas; los perfiles de trabajadores y los precios de referencia son ejemplos.
+
+El recorrido para mostrar en clase es: elegir un oficio y una dirección, revisar un perfil, enviar una solicitud, consultar una cotización y ver el seguimiento. La presentación debe distinguir lo que ya funciona localmente de lo que falta para prestar servicios reales.
+
+Integrantes: Laira Fernanda Barroso Villa, Irma Gloria Núñez Romo, Gonzalo Martínez Zermeño, Leonardo Alfaro García, Jorge Fernando Villalobos García y Luis Ernesto Guerrero García.
